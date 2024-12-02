@@ -32,3 +32,13 @@ springdoc:
     tags-sorter: alpha
   cache:
     disabled: true
+
+
+logging:
+  level:
+    root: INFO
+    org.springframework: INFO
+    org.apache: WARN
+    ch.qos.logback: ERROR
+    org.springframework.boot.logging: ERROR
+    org.springframework.boot.autoconfigure: WARN

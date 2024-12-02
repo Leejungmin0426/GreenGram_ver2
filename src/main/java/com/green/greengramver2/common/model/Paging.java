@@ -17,9 +17,9 @@ public class Paging {
     @JsonIgnore
     private int startIdx;
 
-    public Paging(Integer page, Integer size) {
-        this.page = (page == null || page <= 0) ? 1 : page;
+    public Paging(Integer size, Integer page) {
         this.size = (size == null || size <= 0) ? DEFAULT_PAGE_SIZE : size;
+        this.page = (page == null || page <= 0) ? 1 : page;
         this.startIdx = ( this.page - 1 ) * this.size;
     }
 }

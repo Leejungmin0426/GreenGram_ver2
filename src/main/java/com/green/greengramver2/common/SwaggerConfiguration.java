@@ -7,7 +7,7 @@ import io.swagger.v3.oas.annotations.info.Info;
 @OpenAPIDefinition(
     info = @Info(
         title = "GreenGram",
-        version = "v1",
+        version = "v2",
         description = "그린그램 SNS"
     )
 )
