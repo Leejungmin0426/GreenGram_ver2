@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.green.greengramver2.feed.comments.FeedCommentsMapper">
+
+    <!-- 댓글 등록 -->
+    <insert id="insCommentFeed" useGeneratedKeys="true" keyProperty="feedCommentId">
+        Insert Into feed_comments
+        SET feed_id = #{feedId}
+        , user_id = #{userId}
+        , comment = #{comment}
+
+    </insert>
+
+
+    <select id="selFeedCommentList">
+        SELECT
+        A.feed_comment_id AS feedCommentId,
+        A.comment,
+        B.pic,
+        B.user_id AS writerUserId,
+        B.pic AS writerPic,
+        If(B.nick_name IS null, B.uid, B.nick_name) AS writerNm
+        FROM feed_comments A
+        INNER JOIN user B
+        ON A.user_id = B.user_id
+        WHERE A.feed_id = #{feedId}
+        ORDER BY A.created_at DESC
+        LIMIT #{startIdx}, #{size}
+    </select>
+
+
+
+<!--    &lt;!&ndash; 댓글 수정 &ndash;&gt;-->
+<!--    <update id="updateComment">-->
+<!--        UPDATE feed_comments-->
+<!--        SET comment = #{comment},-->
+<!--        WHERE feed_comment_id = #{feedCommentId}-->
+<!--        AND user_id = #{userId}-->
+<!--    </update>-->
+
+<!--    &lt;!&ndash; 댓글 삭제 &ndash;&gt;-->
+<!--    <delete id="deleteComment">-->
+<!--        DELETE FROM feed_comments-->
+<!--        WHERE feed_comment_id = #{feedCommentId}-->
+<!--        AND user_id = #{userId}-->
+<!--    </delete>-->
+
+<!--    &lt;!&ndash; 댓글 개수 조회 &ndash;&gt;-->
+<!--    <select id="SelFeedCommentsList">-->
+<!--        SELECT A.comment-->
+<!--        , A.feed_comment_id AS feedCommentId-->
+<!--        , A.created_at AS createdAt-->
+<!--        , B.user_id AS writerUserId-->
+<!--        , If(B.nick_name IS null, B.uid, B.nick_name) AS writerNm-->
+<!--        , IF(C.feed_id Is NULL, 0 , 1) AS isLike-->
+<!--        from feed A-->
+<!--        INNER JOIN user B-->
+<!--        ON A.writer_user_id = B.user_id-->
+<!--        LEFT JOIN feed_like C-->
+<!--        ON A.feed_id = C.feed_id-->
+<!--        AND C.user_id = #{signedUserId}-->
+<!--        ORDER BY A.feed_id DESC-->
+<!--        LIMIT #{startIdx}, #{size}-->
+<!--    </select>-->
+
+
+
+</mapper>

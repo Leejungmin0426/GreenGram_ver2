@@ -9,7 +9,7 @@ import java.util.List;
 @Mapper
 public interface FeedMapper {
     int insFeed (FeedPostReq p);
-    List<FeedGetRes> selFeedList (FeedGetReq p);
+    List<FeedGetRes> getFeedList (FeedGetReq p);
     int checkLikeExists(long feedId, long userId);
     void insertLike(long feedId, long userId);
 }

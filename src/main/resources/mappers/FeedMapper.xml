@@ -3,24 +3,21 @@
 
 <mapper namespace="com.green.greengramver2.feed.FeedMapper">
 
-    <insert id = "insFeed" useGeneratedKeys="true" keyProperty="feedId">
+    <insert id="insFeed" useGeneratedKeys="true" keyProperty="feedId">
         INSERT INTO feed
         SET writer_user_id = #{writerUserId}
-            , contents = #{contents}
-            , location = #{location}
-
+        , contents = #{contents}
+        , location = #{location}
     </insert>
 
-    <select id = "selFeedList">
-        SELECT A.contents
-        , A.location
-        , A.feed_id AS feedId
+    <select id="getFeedList">
+        SELECT A.feed_id AS feedId, A.contents, A.location
         , A.created_at AS createdAt
         , B.user_id AS writerUserId
-        , If(B.nick_name IS null, B.uid, B.nick_name) AS writerNm
+        , IF(B.nick_name IS NULL, B.uid, B.nick_name) AS writerNm
         , B.pic AS writerPic
-        , IF(C.feed_id Is NULL, 0 , 1) AS isLike
-        from feed A
+        , IF(C.feed_id IS NULL, 0, 1) AS isLike
+        FROM feed A
         INNER JOIN user B
         ON A.writer_user_id = B.user_id
         LEFT JOIN feed_like C
@@ -29,7 +26,4 @@
         ORDER BY A.feed_id DESC
         LIMIT #{startIdx}, #{size}
     </select>
-
-
-
 </mapper>

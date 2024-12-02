@@ -14,13 +14,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class WebMvcConfiguration implements WebMvcConfigurer {
     private final String uploadPath;
 
-    @Autowired
-    private ClientIpLoggingInterceptor clientIpLoggingInterceptor;
-
-    @Override
-    public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(clientIpLoggingInterceptor);
-    }
 
     public WebMvcConfiguration(@Value("${file.directory}") String uploadPath) {
         this.uploadPath = uploadPath;

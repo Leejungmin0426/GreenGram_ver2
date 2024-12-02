@@ -1,7 +1,10 @@
 package com.green.greengramver2.feed;
 
-import com.green.greengramver2.common.ResultResponse;
 import com.green.greengramver2.common.model.MyFileUtils;
+import com.green.greengramver2.feed.comments.FeedCommentsMapper;
+import com.green.greengramver2.feed.comments.model.FeedCommentDto;
+import com.green.greengramver2.feed.comments.model.FeedCommentGetReq;
+import com.green.greengramver2.feed.comments.model.FeedCommentGetRes;
 import com.green.greengramver2.feed.model.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +22,7 @@ import java.util.List;
 public class FeedService {
     private final FeedMapper feedMapper;
     private final FeedPicsMapper feedPicsMapper;
+    private final FeedCommentsMapper feedCommentMapper;
     private final MyFileUtils myFileUtils;
 
     @Transactional
@@ -77,23 +81,32 @@ public class FeedService {
     }
 
 
-
-
-
-    public List<FeedGetRes> selFeedList (FeedGetReq p) {
-        List<FeedGetRes> list = feedMapper.selFeedList(p);
+    public List<FeedGetRes> getFeedList(FeedGetReq p) {
+        List<FeedGetRes> list = feedMapper.getFeedList(p);
         for (FeedGetRes res : list) {
-            List<String> picList = feedPicsMapper.selFeedPics(res.getFeedId());
-            res.setPics(picList);
+            res.setPics(feedPicsMapper.selFeedPics(res.getFeedId()));
+            //피드 당 댓글 4개
+
+            FeedCommentGetReq commentGetReq = new FeedCommentGetReq();
+            commentGetReq.setPage(1);
+            commentGetReq.setFeedId(res.getFeedId());
+
+
+            List<FeedCommentDto> commentList = feedCommentMapper.selFeedCommentList(commentGetReq);
+
+            FeedCommentGetRes commentGetRes = new FeedCommentGetRes();
+            commentGetRes.setCommentList(commentList);
+            commentGetRes.setMoreComment(commentList.size() == 4);
+
+            if (commentGetRes.isMoreComment()) {
+                commentList.remove(commentList.size() - 1);
+            }
+            // 댓글이 4개 미만일 경우, 필요한 작업 처리
+            res.setComment(commentGetRes);
         }
-        return list;
+            return list; // 피드 리스트 반환
+
     }
-
-
-
-    public void createFeed(FeedPostReq feedRequest) {
-        // 피드 생성 로직
-        System.out.println("Creating feed: " + feedRequest);
-    }
-
 }
+
+
