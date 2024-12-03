@@ -1,7 +1,7 @@
 package com.green.greengramver2.feed;
 
 import com.green.greengramver2.common.model.MyFileUtils;
-import com.green.greengramver2.feed.comments.FeedCommentsMapper;
+import com.green.greengramver2.feed.comments.FeedCommentMapper;
 import com.green.greengramver2.feed.comments.model.FeedCommentDto;
 import com.green.greengramver2.feed.comments.model.FeedCommentGetReq;
 import com.green.greengramver2.feed.comments.model.FeedCommentGetRes;
@@ -22,91 +22,76 @@ import java.util.List;
 public class FeedService {
     private final FeedMapper feedMapper;
     private final FeedPicsMapper feedPicsMapper;
-    private final FeedCommentsMapper feedCommentMapper;
+    private final FeedCommentMapper feedCommentMapper;
     private final MyFileUtils myFileUtils;
 
     @Transactional
     public FeedPostRes postFeed(List<MultipartFile> pics, FeedPostReq p) {
-
         int result = feedMapper.insFeed(p);
 
-
-        // ---------------------------파일 등록
-
-
+        // --------------- 파일 등록
         long feedId = p.getFeedId();
 
-
-        // -------------------------- 저장 폴더 만들기
+        //저장 폴더 만들기, 저장위치/feed/${feedId}/파일들을 저장한다.
         String middlePath = String.format("feed/%d", feedId);
         myFileUtils.makeFolders(middlePath);
 
+        //랜덤 파일명 저장용  >> feed_pics 테이블에 저장할 때 사용
         List<String> picNameList = new ArrayList<>(pics.size());
-
-        for (MultipartFile pic : pics) {
-            String savePicName = myFileUtils.makeRandomFileName(pic);
-            String filePath = String.format("%s/%s", middlePath, savePicName);
-            picNameList.add(savePicName);
+        for(MultipartFile pic : pics) {
+            //각 파일 랜덤파일명 만들기
+            String savedPicName = myFileUtils.makeRandomFileName(pic);
+            picNameList.add(savedPicName);
+            String filePath = String.format("%s/%s", middlePath, savedPicName);
             try {
                 myFileUtils.transferTo(pic, filePath);
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                e.printStackTrace();
             }
-
         }
-
         FeedPicDto feedPicDto = new FeedPicDto();
-
-        feedPicDto.setPics(picNameList);
         feedPicDto.setFeedId(feedId);
-
+        feedPicDto.setPics(picNameList);
         int resultPics = feedPicsMapper.insFeedPics(feedPicDto);
 
         return FeedPostRes.builder()
                 .feedId(feedId)
                 .pics(picNameList)
                 .build();
-
     }
 
-
-    public void likeFeed(long feedId, long userId) {
-        // 좋아요 중복 확인
-        int count = feedMapper.checkLikeExists(feedId, userId);
-        if (count == 0) {
-            feedMapper.insertLike(feedId, userId); // 좋아요 추가
-        } else {
-            throw new IllegalStateException("이미 좋아요를 누른 상태입니다.");
-        }
-    }
-
+//    public void likeFeed(long feedId, long userId) {
+//        // 좋아요 중복 확인
+//        int count = feedMapper.checkLikeExists(feedId, userId);
+//        if (count == 0) {
+//            feedMapper.insertLike(feedId, userId); // 좋아요 추가
+//        } else {
+//            throw new IllegalStateException("이미 좋아요를 누른 상태입니다.");
+//        }
+//    }
 
     public List<FeedGetRes> getFeedList(FeedGetReq p) {
-        List<FeedGetRes> list = feedMapper.getFeedList(p);
-        for (FeedGetRes res : list) {
-            res.setPics(feedPicsMapper.selFeedPics(res.getFeedId()));
+        // N + 1 이슈 발생
+        List<FeedGetRes> list = feedMapper.selFeedList(p);
+        log.info("listTest = {}",list.toString());
+        for(FeedGetRes item : list) {
+            //피드 당 사진 리스트
+            item.setPics(feedPicsMapper.selFeedPics(item.getFeedId()));
+
             //피드 당 댓글 4개
-
-            FeedCommentGetReq commentGetReq = new FeedCommentGetReq();
-            commentGetReq.setPage(1);
-            commentGetReq.setFeedId(res.getFeedId());
-
-
-            List<FeedCommentDto> commentList = feedCommentMapper.selFeedCommentList(commentGetReq);
+            FeedCommentGetReq commentGetReq = new FeedCommentGetReq(item.getFeedId(), 0, 3);
+            List<FeedCommentDto> commentList = feedCommentMapper.selFeedCommentList(commentGetReq); //0, 4
 
             FeedCommentGetRes commentGetRes = new FeedCommentGetRes();
             commentGetRes.setCommentList(commentList);
-            commentGetRes.setMoreComment(commentList.size() == 4);
+            commentGetRes.setMoreComment( commentList.size() == commentGetReq.getSize() ); //4개면 true, 4개 아니면 false
 
-            if (commentGetRes.isMoreComment()) {
+            if(commentGetRes.isMoreComment()) {
                 commentList.remove(commentList.size() - 1);
             }
-            // 댓글이 4개 미만일 경우, 필요한 작업 처리
-            res.setComment(commentGetRes);
+            item.setComment(commentGetRes);
         }
-            return list; // 피드 리스트 반환
-
+        return list;
     }
+
 }
-
-

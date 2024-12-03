@@ -5,7 +5,8 @@ mybatis:
 file:
   directory: D:/2024-02/download/greengram_ver2
 
-default-page-size: 20
+const:
+  default-page-size: 20
 
 spring:
   # DB setting

@@ -10,5 +10,4 @@ public interface FeedPicsMapper {
     int insFeedPics (FeedPicDto p);
     int insFeedPics2 (FeedPicDto p);
     List<String> selFeedPics (long feedId);
-
 }

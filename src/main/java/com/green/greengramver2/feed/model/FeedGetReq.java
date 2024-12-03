@@ -17,9 +17,9 @@ public class FeedGetReq extends Paging {
     @Schema(title = "로그인 유저 PK", name="signed_user_id", example = "1", requiredMode = Schema.RequiredMode.REQUIRED)
     private long signedUserId;
 
-    //@ConstructorProperties({"page", "size", "signed_user_id"})
+    @ConstructorProperties({"page", "size", "signed_user_id"})
     public FeedGetReq(Integer page, Integer size, @BindParam("signed_user_id") long signedUserId) {
-        super(size, page);
+        super(page, size);
         this.signedUserId = signedUserId;
     }
 }

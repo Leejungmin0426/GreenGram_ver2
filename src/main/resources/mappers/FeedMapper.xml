@@ -10,7 +10,7 @@
         , location = #{location}
     </insert>
 
-    <select id="getFeedList">
+    <select id="selFeedList">
         SELECT A.feed_id AS feedId, A.contents, A.location
         , A.created_at AS createdAt
         , B.user_id AS writerUserId
