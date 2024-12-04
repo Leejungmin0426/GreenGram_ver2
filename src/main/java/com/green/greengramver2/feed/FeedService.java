@@ -74,9 +74,17 @@ public class FeedService {
         // N + 1 이슈 발생
         List<FeedGetRes> list = feedMapper.selFeedList(p);
         log.info("listTest = {}",list.toString());
-        for(FeedGetRes item : list) {
+//
+
+        for (int i = 0; i < list.size(); i++){
+            FeedGetRes item = list.get(i);
             //피드 당 사진 리스트
             item.setPics(feedPicsMapper.selFeedPics(item.getFeedId()));
+
+//            for (FeedGetRes item : list) {
+//                // 피드 당 사진 리스트 설정
+//                item.setPics(feedPicsMapper.selFeedPics(item.getFeedId()));
+//            }
 
             //피드 당 댓글 4개
             FeedCommentGetReq commentGetReq = new FeedCommentGetReq(item.getFeedId(), 0, 3);

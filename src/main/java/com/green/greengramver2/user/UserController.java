@@ -1,15 +1,12 @@
 package com.green.greengramver2.user;
 
 import com.green.greengramver2.common.ResultResponse;
-import com.green.greengramver2.common.model.MyFileUtils;
 import com.green.greengramver2.user.model.UserSignInReq;
 import com.green.greengramver2.user.model.UserSignInRes;
 import com.green.greengramver2.user.model.UserSignUpReq;
 import io.swagger.v3.oas.annotations.Operation;
-import jakarta.servlet.http.PushBuilder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 

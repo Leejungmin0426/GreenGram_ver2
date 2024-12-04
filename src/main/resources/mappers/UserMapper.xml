@@ -18,7 +18,6 @@
 
         SELECT user_id AS userId
         , IFNULL(nick_name, uid) AS nickName
-        , nick_name AS nickName
         , pic, upw
         FROM user
         WHERE uid= #{uid}
