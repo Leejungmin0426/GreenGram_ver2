@@ -26,11 +26,12 @@ public class UserService {
         String password = BCrypt.hashpw(p.getUpw(),BCrypt.gensalt());
         p.setUpw(password);
         String savedPicName = null;
+        int result = mapper.insUser(p);
+
         if(pic != null){
             savedPicName = myFileUtils.makeRandomFileName(pic);
         }
         p.setPic(savedPicName);
-        int result = mapper.insUser(p);
 
         if(pic == null) {
             return result;
